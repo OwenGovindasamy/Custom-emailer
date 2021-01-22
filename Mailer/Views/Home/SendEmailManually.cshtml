@@ -1,0 +1,104 @@
+﻿@model Mailer.Dto.CustomerDto
+
+@{
+    ViewBag.Title = "SendEmailManually";
+}
+
+<h2>Send An Email Manually</h2>
+
+
+<form id="Form">
+
+    <div class="form-horizontal">
+        <hr />
+        <div class="form-group">
+            @Html.LabelFor(x => x.Campaign, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(t => t.Campaign, new List<SelectListItem>
+        {
+               new SelectListItem() {Text = "Maintenance", Value="Maintenance"},
+               new SelectListItem() {Text = "Orders", Value="Orders"},
+                            }, new { @class = "form-control", @required = "required" })
+                @Html.ValidationMessageFor(t => t.Campaign)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2">ApiAction</label>
+            <div class="col-md-10">
+                <select class="form-control" id="ApiAction" name="ApiAction" required="required">
+                    <option value="ManualSend">ManualSend</option>
+                    <option value="Test">test method</option>
+                </select>
+                <span class="field-validation-valid" data-valmsg-for="ApiAction" data-valmsg-replace="true"></span>
+            </div>
+        </div>
+        <br />
+        <br />
+        <br />
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="button" id="Submit" value="Submit" class="btn btn-default btn-block" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<div>
+    @Html.ActionLink("Back to Home", "Index")
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            $('#Submit').click(function () {
+
+                var $form = $('#Form').serialize();
+                var validateForm = $('#Form').validate();
+                var ActionResult = $('#ApiAction').val();
+
+                console.log($form)
+
+                if (validateForm.valid()) {
+                    $.ajax({
+                        type: "GET",
+                        cache: false,
+                        url: "/home/" + ActionResult,
+                        data: $form,
+                        success: function (data)
+                        {
+                            alert('sent!');
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            alert("An error has occured, if this continues please contact your administrator." + errorThrown);
+                            console.log(XMLHttpRequest + textStatus + errorThrown)
+                        }
+                    })
+                }
+            })
+            $('#Campaign').change(function ()
+            {
+                var selected = $('#Campaign').find(":selected").text();
+
+                if (selected == 'Alternative Guarantor' || selected == 'Send Guarantor Login' || selected == 'Guarantor Notification' || selected =='GuarantorEmail2')
+                {
+                    $('#GtorUserIdDiv').show()
+                    $('#GtorEmailDiv').show()
+                    $('#GtorNameDiv').show()
+                }
+                else
+                {
+                    $('#GtorUserId').val('')
+                    $('#GtorEmail').val('')
+                    $('#GtorName').val('')
+                    $('#GtorUserIdDiv').hide()
+                    $('#GtorEmailDiv').hide()
+                    $('#GtorNameDiv').hide()
+                }
+            })
+        });
+    </script>
+}
