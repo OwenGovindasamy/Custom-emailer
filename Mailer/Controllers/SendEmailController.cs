@@ -40,7 +40,7 @@ namespace Mailer.Controllers
             {
                 try
                 {
-                        return Ok(await _Logic.SendEmailLogic(customerDto));
+                    return Ok(await _Logic.SendEmailLogic(customerDto));
                 }
                 catch (Exception e)
                 {

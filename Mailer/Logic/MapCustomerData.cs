@@ -11,7 +11,7 @@ namespace Mailer.Logic
 {
     public class MapCustomerData: IMapCustomerData
     {
-        // can be changed in the web config
+        // can be changed in web config
         private string SenderEmailAddress = ConfigurationManager.AppSettings["SenderEmailAddress"]; 
         private string RecipientEmailAddress = ConfigurationManager.AppSettings["RecipientEmailAddress"]; 
         private bool isTestSend = Convert.ToBoolean(ConfigurationManager.AppSettings["isTestSend"]);
@@ -34,21 +34,21 @@ namespace Mailer.Logic
 
                 var dynamicTemplateData = new Dictionary<string, object>
                 { // dynamicTemplateData fields goes into the email template eg on html {{Name}} will have the value of Name below.
-                    { "Id", customer.Id },                   //1
-                    { "Name", customer.Name },               //2
-                    { "Time", customer.Time },               //3
-                    { "email", customer.Email },             //4
-                    { "Description", customer.Description }, //5
-                    { "Cell", customer.Cell },               //6
+                    { "Id", customer.Id },                   
+                    { "Name", customer.Name },               
+                    { "Time", customer.Time },               
+                    { "email", customer.Email },             
+                    { "Description", customer.Description }, 
+                    { "Cell", customer.Cell },               
                 };
 
                 SendGridMessage msg = MailHelper.CreateSingleTemplateEmail(
-                    new EmailAddress(SenderEmailAddress, "ACME Info Tech"),
+                    new EmailAddress(SenderEmailAddress, "ACME Info Tech"),// Sender/company name that will be on the email
                     new EmailAddress(customer.Email), "d-template-id", dynamicTemplateData); 
 
 
                 switch (CustomerDto.Campaign)
-                {//SetTemplateId ARE EMAIL TEMPLATE IDs LOCATED ON SENDGRID
+                {//SetTemplateId IS THE EMAIL TEMPLATE LOCATED ON SENDGRID 
                     case "Maintenance":
                         msg.SetTemplateId("d-7ddbf1d167f84b219460d81daf1ef79d"); 
                         break;
@@ -61,21 +61,14 @@ namespace Mailer.Logic
 
                 CustomerDto.EmailSent = (response.StatusCode.ToString() != "Accepted") ? false : true;
 
-                // TODO: save this record once sent
 
                 if (response.StatusCode.ToString() != "Accepted")
                 {
-                    //return false;
-                }
-                else
-                {
-                    //return true;
+                    // TODO: save record as sent
                 }
             }
 
-
             return true;
-           
         }
 
         // Connect to remote MySql server and retrieve a list of user details 
@@ -85,7 +78,7 @@ namespace Mailer.Logic
             using (MySqlConnection con = new MySqlConnection("SERVER=000.000.00.00;" + "DATABASE=dbName;" + "UID=user1;" + "Pwd=1234;"))
             {
                 con.Open();
-                string s = "select * from cData";
+                string s = "select * from Customers"; // normally 's' is a stored procedure
                 using (MySqlCommand cmd = new MySqlCommand(s, con))
                 {
                     await cmd.ExecuteNonQueryAsync();
